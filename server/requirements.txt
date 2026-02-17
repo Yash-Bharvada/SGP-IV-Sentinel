@@ -1,0 +1,17 @@
+fastapi
+uvicorn
+python-multipart
+torch
+torchaudio
+transformers
+librosa
+scipy
+numpy
+accelerate
+sentencepiece
+protobuf
+groq
+gradio-client
+langdetect
+edge-tts
+aiofiles
