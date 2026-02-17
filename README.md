@@ -38,14 +38,14 @@ Most AIs stop at "Positive" or "Negative". Sentinel goes deeper:
 
 ```mermaid
 graph LR
-    A[User Voice/Text] --> B(Next.js Frontend);
-    B --> C{FastAPI Backend};
-    C -->|Audio| D[Gradio Space (Generic Sentiment)];
-    C -->|Semantics| E[Groq LPU (Llama-3 Arbitration)];
+    A["User Voice/Text"] --> B("Next.js Frontend");
+    B --> C{"FastAPI Backend"};
+    C -->|Audio| D["Gradio Space (Generic Sentiment)"];
+    C -->|Semantics| E["Groq LPU (Llama-3 Arbitration)"];
     E -->|Correction| C;
-    C -->|Text| F[Edge TTS (Neural Voice)];
+    C -->|Text| F["Edge TTS (Neural Voice)"];
     F -->|Audio MP3| B;
-    B --> G[Result Card];
+    B --> G["Result Card"];
 ```
 
 ---
