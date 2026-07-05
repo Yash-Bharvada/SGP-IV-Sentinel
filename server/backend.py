@@ -25,8 +25,8 @@ app.add_middleware(
 # Example: "marshal-yash/SGP-IV-Voice-Sentiment-Brain"
 GRADIO_SPACE_URL = "marshal-yash/Indic-Sentiment-Audio-App" 
 
-# Groq API Configuration
-GROQ_API_KEY = ""
+# Groq API Configuration — loaded from environment / .env file
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
 
 # Global Client Variables
 gradio_client = None
@@ -76,14 +76,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ... (rest of configuration)
-# REPLACE THIS with the actual name or URL of your Hugging Face Space
-GRADIO_SPACE_URL = "marshal-yash/Indic-Sentiment-Audio-App"
-GROQ_API_KEY = ""
-
-# Global Client Variables
-gradio_client = None
-groq_client = None
+# Global Client Variables (duplicate block removed — see top of file)
 
 
 @app.post("/analyze")
