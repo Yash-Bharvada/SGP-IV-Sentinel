@@ -26,7 +26,7 @@ app.add_middleware(
 GRADIO_SPACE_URL = "marshal-yash/Indic-Sentiment-Audio-App" 
 
 # Groq API Configuration
-GROQ_API_KEY = "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"
+GROQ_API_KEY = ""
 
 # Global Client Variables
 gradio_client = None
@@ -79,7 +79,7 @@ app.add_middleware(
 # ... (rest of configuration)
 # REPLACE THIS with the actual name or URL of your Hugging Face Space
 GRADIO_SPACE_URL = "marshal-yash/Indic-Sentiment-Audio-App"
-GROQ_API_KEY = "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"
+GROQ_API_KEY = ""
 
 # Global Client Variables
 gradio_client = None
@@ -146,11 +146,31 @@ async def analyze(
                 # Detect from text input
                 source_lang = detect_language(text)
                 print(f"📝 Auto-detected language from text: {source_lang}")
+            elif file:
+                # Use Groq Whisper to detect spoken language directly from audio
+                try:
+                    print("🎧 Using Groq to detect spoken language from audio...")
+                    with open(temp_file_path, "rb") as audio_file:
+                        transcription_obj = groq_client.audio.transcriptions.create(
+                            file=(os.path.basename(temp_file_path), audio_file.read()),
+                            model="whisper-large-v3",
+                            response_format="verbose_json",
+                        )
+                    detected_lang_str = str(transcription_obj.language).lower()
+                    print(f"👂 Groq detected language: {detected_lang_str}")
+                    
+                    lang_map = {
+                        'english': 'eng', 'en': 'eng',
+                        'hindi': 'hin', 'hi': 'hin',
+                        'gujarati': 'guj', 'gu': 'guj'
+                    }
+                    source_lang = lang_map.get(detected_lang_str, 'eng')
+                    print(f"✅ Set language to: {source_lang}")
+                except Exception as e:
+                    print(f"⚠️ Groq language detection failed: {e}, defaulting to 'eng'")
+                    source_lang = 'eng'
             else:
-                # For audio, we'll detect after transcription
-                # Use 'eng' as default for initial transcription
                 source_lang = 'eng'
-                print(f"🎤 Audio input - will detect language after transcription")
         else:
             print(f"✓ Using provided language: {source_lang}")
 
@@ -195,11 +215,11 @@ async def analyze(
         sentiment_data = result[1]
         confidence_score = result[2]
 
-        # --- Step 5: Re-detect language from transcription if it was audio ---
+        # --- Step 5: Finalize output language ---
+        # We KEEP source_lang as the detected_language, even if Gradio translated the transcription to English.
+        # This ensures the final insights and voice output remain in the original spoken language!
         detected_language = source_lang
-        if audio_input and transcription:
-            detected_language = detect_language(transcription)
-            print(f"🔄 Re-detected language from transcription: {detected_language}")
+        print(f"🗣️ Using spoken language for output: {detected_language}")
 
         # Normalize Sentiment Label
         sentiment_label = "Neutral"

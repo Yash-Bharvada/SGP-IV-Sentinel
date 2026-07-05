@@ -32,6 +32,7 @@ export default function Home() {
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [orbColor, setOrbColor] = useState<string | undefined>(undefined);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState<string>("auto");
 
   // Refs for raw audio capture
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -348,7 +349,10 @@ export default function Home() {
       } else {
         formData.append("text", input);
       }
-      // source_lang removed - backend will auto-detect
+      
+      if (selectedLanguage !== "auto") {
+        formData.append("source_lang", selectedLanguage);
+      }
 
       const response = await fetch("http://localhost:8000/analyze", {
         method: "POST",
@@ -465,6 +469,8 @@ export default function Home() {
         onRecordToggle={handleRecordToggle}
         onTextSubmit={handleTextSubmit}
         onFileUpload={handleFileUpload}
+        onLanguageChange={setSelectedLanguage}
+        selectedLanguage={selectedLanguage}
       />
 
       {/* Demo Controls */}

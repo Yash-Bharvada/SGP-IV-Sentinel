@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Paperclip, Send, Mic, Square } from "lucide-react";
+import { Paperclip, Send, Mic, Square, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -11,6 +11,8 @@ interface CommandDockProps {
     onRecordToggle: () => void;
     onTextSubmit: (text: string) => void;
     onFileUpload: (file: File) => void;
+    onLanguageChange: (lang: string) => void;
+    selectedLanguage: string;
 }
 
 export function CommandDock({
@@ -19,6 +21,8 @@ export function CommandDock({
     onRecordToggle,
     onTextSubmit,
     onFileUpload,
+    onLanguageChange,
+    selectedLanguage,
 }: CommandDockProps) {
     const [inputValue, setInputValue] = useState("");
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -50,7 +54,7 @@ export function CommandDock({
             animate={{ y: 0, opacity: 1 }}
             className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex items-center"
         >
-            <div className="bg-zinc-900/40 backdrop-blur-xl border border-white/10 rounded-full px-4 py-2 flex items-center gap-3 w-[500px] shadow-2xl shadow-black/50">
+            <div className="bg-zinc-900/40 backdrop-blur-xl border border-white/10 rounded-full px-4 py-2 flex items-center gap-3 w-[600px] shadow-2xl shadow-black/50">
                 <button
                     onClick={() => fileInputRef.current?.click()}
                     className="p-2 text-zinc-400 hover:text-white transition-colors rounded-full hover:bg-white/5"
@@ -68,12 +72,28 @@ export function CommandDock({
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    placeholder="Type or speak... (language auto-detected)"
+                    placeholder="Type or speak..."
                     className="flex-1 bg-transparent outline-none text-white placeholder-zinc-500 font-medium"
                     disabled={isProcessing}
                 />
 
-                <div className="relative">
+                {/* Language Selector */}
+                <div className="flex items-center gap-1 border-l border-white/10 pl-3">
+                    <Globe className="w-4 h-4 text-zinc-400" />
+                    <select
+                        className="bg-transparent text-zinc-300 outline-none text-sm cursor-pointer hover:text-white [&>option]:bg-zinc-900 [&>option]:text-white"
+                        value={selectedLanguage}
+                        onChange={(e) => onLanguageChange(e.target.value)}
+                        disabled={isProcessing || isRecording}
+                    >
+                        <option value="auto">Auto Detect</option>
+                        <option value="eng">English</option>
+                        <option value="hin">Hindi</option>
+                        <option value="guj">Gujarati</option>
+                    </select>
+                </div>
+
+                <div className="relative border-l border-white/10 pl-3">
                     <AnimatePresence mode="wait">
                         {inputValue.trim() ? (
                             <motion.button
